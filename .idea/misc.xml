@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.10" project-jdk-type="Python SDK" />
+  <component name="Black">
+    <option name="enabledOnReformat" value="true" />
+    <option name="executionMode" value="BINARY" />
+    <option name="pathToExecutable" value="C:\Users\PC\AppData\Local\Programs\Python\Python310\Scripts\black.exe" />
+    <option name="sdkUUID" value="7f58ea33-2412-4dec-b108-1b7d6316b77e" />
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Poetry (goit-hw-7)" project-jdk-type="Python SDK" />
 </project>
