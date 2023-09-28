@@ -1,4 +1,4 @@
-from sqlalchemy import func, desc, select, and_
+from sqlalchemy import func, desc, select, and_, distinct
 
 from src.models import Teacher, Student, Discipline, Grade, Group
 from src.db import session
@@ -100,16 +100,80 @@ def select_six(group_id):
     return r
 
 
-def select_seven():
+def select_seven(group_id, discipline_id):
     r = (
-        session.query(Student.fullname, Group.name)
-        .select_from(Student)
-        .join(Group)
-        .filter(Group.id == group_id)
+        session.query(
+            Grade.grade,
+            Student.fullname,
+            Group.name,
+            Discipline.name
+        )
+        .select_from(Grade)
+        .join(Student, Grade.student_id == Student.id)
+        .join(Group, Student.group_id == Group.id)
+        .join(Discipline, Grade.discipline_id == Discipline.id)
+        .where(and_(Group.id == group_id, Discipline.id == discipline_id))
+        .order_by(desc(Student.fullname))
         .all()
     )
-    
     return r
+
+
+def select_eight(teacher_id):
+    r = (
+        session.query(
+            Teacher.fullname,
+            Discipline.name,
+            func.round(func.avg(Grade.grade), 2).label("avg_grade")
+        )
+        .select_from(Grade)
+        .join(Discipline)
+        .join(Teacher)
+        .filter(Discipline.teacher_id == teacher_id)
+        .group_by(Discipline.name, Teacher.fullname)
+        .all()
+    )
+    return r
+
+
+def select_nine(student_id):
+    r = (
+        session.query(
+            distinct(Discipline.name)
+        )
+        .select_from(Student)
+        .join(Grade)
+        .join(Discipline)
+        .filter(Student.id == student_id)
+        .all()
+    )
+    return r
+
+
+def select_ten(student_id, teacher_id):
+    r = (
+        session.query(distinct(Discipline.name))
+        .select_from(Student)
+        .join(Grade)
+        .join(Discipline)
+        .filter(and_(Student.id == student_id, Discipline.teacher_id == teacher_id))
+        .all()
+    )
+    return r
+
+
+def select_eleven(student_id, teacher_id):
+    r = (
+        session.query(func.round(func.avg(Grade.grade), 2).label("avg_grade"))
+        .select_from(Grade)
+        .join(Student)
+        .join(Discipline)
+        .filter(and_(Student.id == student_id, Discipline.teacher_id == teacher_id))
+        .all()
+    )
+    return r
+
+
 def select_twelve(discipline_id, group_id):
     subquery = (
         select(Grade.date_of)
@@ -143,12 +207,15 @@ def select_twelve(discipline_id, group_id):
 
 
 if __name__ == "__main__":
-    # print(select_one())
+    print(select_one())
     print(select_two(1))
-    # print(select_three(1))
-    # print(select_four()[0][0])
-    # print(select_five(5))
-    # print(select_six(1))
-
-
-    #print(select_twelve(1, 2))
+    print(select_three(1))
+    print(select_four()[0][0])
+    print(select_five(5))
+    print(select_six(1))
+    print(select_seven(3, 2))
+    print(select_eight(1))
+    print(select_nine(4))
+    print(select_ten(2, 4))
+    print(select_eleven(6, 4))
+    print(select_twelve(1, 2))
