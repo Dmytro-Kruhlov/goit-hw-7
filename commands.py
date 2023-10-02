@@ -3,7 +3,6 @@ from src.db import session
 from src.models import Student, Teacher, Group, Discipline, Grade
 from random import choice, randint
 from datetime import datetime
-from faker import Faker
 
 
 def add_student(name):
@@ -40,10 +39,7 @@ def add_discipline(name):
 def add_grade(student_id, dis_id):
     date = datetime.strftime(datetime.now().date(), "%Y-%m-%d")
     grade = Grade(
-        grade=randint(1, 12),
-        date_of=date,
-        student_id=student_id,
-        discipline_id=dis_id
+        grade=randint(1, 12), date_of=date, student_id=student_id, discipline_id=dis_id
     )
     session.add(grade)
     session.commit()
@@ -52,7 +48,7 @@ def add_grade(student_id, dis_id):
 
 def update_student(_id, name, gr_id):
     student = session.query(Student).filter(Student.id == _id)
-    student.update({'fullname': name, 'group_id': gr_id})
+    student.update({"fullname": name, "group_id": gr_id})
     session.commit()
     session.close()
     return student.one()
@@ -67,8 +63,15 @@ def update_teacher(_id, name):
 
 
 def show_students():
+    print(session.scalars(select(Student.fullname)).all())
 
 
+def delete_student(_id):
+    r = session.query(Student).filter(Student.id == _id).delete()
+    session.commit()
+    session.close()
+    return r
 
-if __name__ == '__main__':
-    update_student(51, "Oleg", 3)
+
+if __name__ == "__main__":
+    delete_student(51)
